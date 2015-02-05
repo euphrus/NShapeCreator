@@ -79,32 +79,32 @@ namespace NShapeCreator.GDI
             set { _YAxisGridMultiple = value; }
         }
 
-        private int _displaySizeMultiple;
+        private float _displaySizeMultiple;
         [Category("\tDisplay Output Options")]
         [Description("Multiplies the display size (X and Y) of the image")]
         [DisplayName("Display Size Multiple")]
-        public int DisplaySizeMultiple
+        public float DisplaySizeMultiple
         {
             get { return _displaySizeMultiple; }
             set { _displaySizeMultiple = value; }
         }
 
 
-        private int _pointSizeMultiple;
+        private float _pointSizeMultiple;
         [Category("\tPoint Output Options")]
         [Description("Multiplies the display size (X and Y) of the points")]
         [DisplayName("Point Size Multiple")]
-        public int PointSizeMultiple
+        public float PointSizeMultiple
         {
             get { return _pointSizeMultiple; }
             set { _pointSizeMultiple = value; }
         }
 
-        private int _imageSizeMultiple;
+        private float _imageSizeMultiple;
         [Category("\tImage Output Options")]
         [Description("Multiplies the image size (X and Y) of the image")]
         [DisplayName("Image Size Multiple")]
-        public int ImageSizeMultiple
+        public float ImageSizeMultiple
         {
             get { return _imageSizeMultiple; }
             set { _imageSizeMultiple = value; }
@@ -180,7 +180,7 @@ namespace NShapeCreator.GDI
         [DisplayName("Pen Color")]
         public Color PenColor { get; set; }
 
-        public static GDIShape GetPoints(GDIShape cartesian, PointTypeID pointType, Size canvasSize, int multiplier)
+        public static GDIShape GetPoints(GDIShape cartesian, PointTypeID pointType, Size canvasSize, float multiplier)
         {
             GDIShape returnValue = null;
             switch (pointType)
@@ -198,7 +198,7 @@ namespace NShapeCreator.GDI
             return returnValue;
         }
 
-        private static GDIShape GetGDIPoints(GDIShape cartesian, Size canvaseSize, int multiplier)
+        private static GDIShape GetGDIPoints(GDIShape cartesian, Size canvaseSize, float multiplier)
         {
             GDIShape returnValue = (GDIShape)cartesian.Clone();
             float xOffset = canvaseSize.Width / 2f;
@@ -270,7 +270,7 @@ namespace NShapeCreator.GDI
             return returnValue;
         }
 
-        private static GDIShape GetNShapePoints(GDIShape cartesian, Size canvaseSize, int multiplier)
+        private static GDIShape GetNShapePoints(GDIShape cartesian, Size canvaseSize, float multiplier)
         {
             GDIShape c = (GDIShape)cartesian.Clone();
             int Width = canvaseSize.Width;
@@ -336,7 +336,7 @@ namespace NShapeCreator.GDI
             return c;
         }
 
-        private static GDIShape GetCartesianPoints(GDIShape cartesian, Size canvaseSize, int multiplier)
+        private static GDIShape GetCartesianPoints(GDIShape cartesian, Size canvaseSize, float multiplier)
         {
             GDIShape c = (GDIShape)cartesian.Clone();
             int Width = canvaseSize.Width;

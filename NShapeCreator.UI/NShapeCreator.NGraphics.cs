@@ -10,7 +10,7 @@ namespace NShapeCreator
     internal static class NGraphics
     {
 
-        public static void DrawBoundingBox(Graphics g, Size canvasSize, GDIShape gdiShape, int multiplier)
+        public static void DrawBoundingBox(Graphics g, Size canvasSize, GDIShape gdiShape, float multiplier)
         {
             using (GraphicsPath path = new GraphicsPath())
             {
@@ -25,7 +25,7 @@ namespace NShapeCreator
             }
         }
 
-        public static void DrawGrid(Graphics g, Size canvasSize, GDIShape gdiShape, int multiplier)
+        public static void DrawGrid(Graphics g, Size canvasSize, GDIShape gdiShape, float multiplier)
         {
 
             using (GraphicsPath path = new GraphicsPath())
@@ -92,7 +92,7 @@ namespace NShapeCreator
             g.Clear(Color.White);
         }
 
-        public static void DrawGDIPaths(Graphics g, Size canvasSize, GDIShape gdiShape, int multiplier)
+        public static void DrawGDIPaths(Graphics g, Size canvasSize, GDIShape gdiShape, float multiplier)
         {
             if (gdiShape != null)
             {

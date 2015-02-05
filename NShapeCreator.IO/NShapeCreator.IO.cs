@@ -20,7 +20,7 @@ namespace NShapeCreator.IO
         public static void SaveFiles(GDIShape gdiShape, Size canvasSize)
         {
             //string initialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            string initialDirectory = @"C:\Users\n9948482\Desktop\Dev\STEMS\CurrentWork\NShape Source Files\ElectricalConnectors";
+            string initialDirectory = @"C:\Repo\GitHub\NShape Source Files\ElectricalConnectors";
             string fileName = gdiShape.Name.Replace(" ", "");
 
             Action<string> save = (s) =>
@@ -28,7 +28,24 @@ namespace NShapeCreator.IO
                 string directory = Path.GetDirectoryName(s);
                 string baseFileName = Path.GetFileNameWithoutExtension(s);
                 SaveGDI(gdiShape, Path.Combine(Path.Combine(directory, "GDI"), baseFileName + ".gdi"));
-                SaveImage(gdiShape, Path.Combine(Path.Combine(directory, "Resources"), baseFileName + ".bmp"), (int)Math.Ceiling(gdiShape.Width * gdiShape.ImageSizeMultiple), (int)Math.Ceiling(gdiShape.Height * gdiShape.ImageSizeMultiple), ImageFormat.Bmp);
+                float resourceImageMultiple = 1;
+                int maxSize = 300;
+                if (gdiShape.Width > gdiShape.Height)
+                {
+                    while ((gdiShape.Width / maxSize * resourceImageMultiple) > 1)
+                    {
+                        resourceImageMultiple -= .01F;
+                    }
+                }
+                else
+                {
+                    while ((gdiShape.Height / maxSize * resourceImageMultiple) > 1)
+                    {
+                        resourceImageMultiple -= .01F;
+                    }
+                }
+                SaveImage(gdiShape, Path.Combine(Path.Combine(directory, "Resources"), baseFileName + ".bmp"), (int)Math.Ceiling(gdiShape.Width), (int)Math.Ceiling(gdiShape.Height), ImageFormat.Bmp, resourceImageMultiple);
+                //SaveImage(gdiShape, Path.Combine(directory, baseFileName + ".png"), (int)Math.Ceiling(gdiShape.Width * gdiShape.ImageSizeMultiple), (int)Math.Ceiling(gdiShape.Height * gdiShape.ImageSizeMultiple), ImageFormat.Png);
                 SaveTxt(Path.Combine(Path.Combine(directory, "Connectors"), baseFileName + ".cs"), DotNet.GetShapeClass(canvasSize, gdiShape, gdiShape.PointSizeMultiple));
                 SaveTxt(Path.Combine(Path.Combine(directory, "Connectors"), "RectangleFBase.cs"), DotNet.GetRectangleFBaseClass(canvasSize, gdiShape, gdiShape.PointSizeMultiple));
             };
@@ -52,14 +69,14 @@ namespace NShapeCreator.IO
             }
         }
 
-        private static void SaveImage(GDIShape gdiShape, string fileName, int width, int height, ImageFormat imageFormat)
+        private static void SaveImage(GDIShape gdiShape, string fileName, int width, int height, ImageFormat imageFormat, float outputMultiple = 1)
         {
             string directory = Path.GetDirectoryName(fileName);
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
             }
-            using (Bitmap bmp = new Bitmap(width, height))
+            using (Bitmap bmp = new Bitmap((int)Math.Ceiling(width * outputMultiple), (int)Math.Ceiling(height * outputMultiple)))
             {
                 bmp.SetResolution(300, 300);
                 using (Graphics g = Graphics.FromImage(bmp))
@@ -69,7 +86,7 @@ namespace NShapeCreator.IO
                     g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                     g.TextRenderingHint = TextRenderingHint.AntiAlias;
                     g.SmoothingMode = SmoothingMode.HighQuality;
-                    NGraphics.DrawGDIPaths(g, bmp.Size, gdiShape, gdiShape.ImageSizeMultiple);
+                    NGraphics.DrawGDIPaths(g, bmp.Size, gdiShape, outputMultiple);//gdiShape.ImageSizeMultiple);
                 }
                 bmp.Save(fileName, imageFormat);
             }
@@ -157,7 +174,7 @@ namespace NShapeCreator.IO
         private const string tab7 = "\t\t\t\t\t\t\t";
         private const string tab8 = "\t\t\t\t\t\t\t\t";
 
-        public static string GetShapeClass(Size canvasSize, GDIShape gdiShape, int multiplier)
+        public static string GetShapeClass(Size canvasSize, GDIShape gdiShape, float multiplier)
         {
             StringBuilder sb = new StringBuilder();
             if (gdiShape != null)
@@ -382,7 +399,7 @@ namespace NShapeCreator.IO
             return sb.ToString();
         }
 
-        public static string GetRectangleFBaseClass(Size canvasSize, GDIShape gdiShape, int multiplier)
+        public static string GetRectangleFBaseClass(Size canvasSize, GDIShape gdiShape, float multiplier)
         {
             string className = "RectangleFBase";
             string nameSpace = "Windstream.Shapes.NShape.Electrical.Connectors";

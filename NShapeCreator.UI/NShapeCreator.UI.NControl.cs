@@ -382,7 +382,7 @@ namespace NShapeCreator.UI
             {
                 OpenFileDialog fileDialog = new OpenFileDialog();
                 //fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-                fileDialog.InitialDirectory = @"C:\Users\n9948482\Desktop\Dev\STEMS\CurrentWork\NShape Source Files\ElectricalConnectors\GDI";
+                fileDialog.InitialDirectory = @"C:\Repo\GitHub\NShape Source Files\ElectricalConnectors\GDI";
                 fileDialog.DefaultExt = "gdi";
                 fileDialog.Filter = "gdi files (*.gdi)|*.gdi";
                 fileDialog.FilterIndex = 1;
