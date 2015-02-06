@@ -89,7 +89,6 @@ namespace NShapeCreator.GDI
             set { _displaySizeMultiple = value; }
         }
 
-
         private float _pointSizeMultiple;
         [Category("\tPoint Output Options")]
         [Description("Multiplies the display size (X and Y) of the points")]
@@ -412,8 +411,6 @@ namespace NShapeCreator.GDI
             me.Segments = (GDIPathSegmentCollection)Segments.Clone();
             return (Object)me;
         }
-
-
 
         [Category("Path")]
         [Description("Collection of segments that define this path")]

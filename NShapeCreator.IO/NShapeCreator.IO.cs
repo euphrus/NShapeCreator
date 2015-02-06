@@ -29,23 +29,22 @@ namespace NShapeCreator.IO
                 string baseFileName = Path.GetFileNameWithoutExtension(s);
                 SaveGDI(gdiShape, Path.Combine(Path.Combine(directory, "GDI"), baseFileName + ".gdi"));
                 float resourceImageMultiple = 1;
-                int maxSize = 300;
-                if (gdiShape.Width > gdiShape.Height)
+                int maxSize = 60;
+                if (((gdiShape.Width / maxSize * resourceImageMultiple) < 1
+                    || (gdiShape.Height / maxSize * resourceImageMultiple) < 1))
                 {
-                    while ((gdiShape.Width / maxSize * resourceImageMultiple) > 1)
+                    while ((gdiShape.Width / maxSize * resourceImageMultiple) < 1
+                        || (gdiShape.Height / maxSize * resourceImageMultiple) < 1)
+                    {
+                        resourceImageMultiple += .01F;
+                    }
+                    while ((gdiShape.Width / maxSize * resourceImageMultiple) > 1
+                        || (gdiShape.Height / maxSize * resourceImageMultiple) > 1)
                     {
                         resourceImageMultiple -= .01F;
                     }
                 }
-                else
-                {
-                    while ((gdiShape.Height / maxSize * resourceImageMultiple) > 1)
-                    {
-                        resourceImageMultiple -= .01F;
-                    }
-                }
-                SaveImage(gdiShape, Path.Combine(Path.Combine(directory, "Resources"), baseFileName + ".bmp"), (int)Math.Ceiling(gdiShape.Width), (int)Math.Ceiling(gdiShape.Height), ImageFormat.Bmp, resourceImageMultiple);
-                //SaveImage(gdiShape, Path.Combine(directory, baseFileName + ".png"), (int)Math.Ceiling(gdiShape.Width * gdiShape.ImageSizeMultiple), (int)Math.Ceiling(gdiShape.Height * gdiShape.ImageSizeMultiple), ImageFormat.Png);
+                SaveResourceImage(gdiShape, Path.Combine(Path.Combine(directory, "Resources"), baseFileName + ".bmp"), (int)Math.Ceiling(gdiShape.Width), (int)Math.Ceiling(gdiShape.Height), ImageFormat.Bmp, resourceImageMultiple);
                 SaveTxt(Path.Combine(Path.Combine(directory, "Connectors"), baseFileName + ".cs"), DotNet.GetShapeClass(canvasSize, gdiShape, gdiShape.PointSizeMultiple));
                 SaveTxt(Path.Combine(Path.Combine(directory, "Connectors"), "RectangleFBase.cs"), DotNet.GetRectangleFBaseClass(canvasSize, gdiShape, gdiShape.PointSizeMultiple));
             };
@@ -69,14 +68,14 @@ namespace NShapeCreator.IO
             }
         }
 
-        private static void SaveImage(GDIShape gdiShape, string fileName, int width, int height, ImageFormat imageFormat, float outputMultiple = 1)
+        private static void SaveResourceImage(GDIShape gdiShape, string fileName, int width, int height, ImageFormat imageFormat, float outputMultiple = 1)
         {
             string directory = Path.GetDirectoryName(fileName);
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
             }
-            using (Bitmap bmp = new Bitmap((int)Math.Ceiling(width * outputMultiple), (int)Math.Ceiling(height * outputMultiple)))
+            using (Bitmap bmp = new Bitmap((int)Math.Ceiling((width * outputMultiple) + 2), (int)Math.Ceiling((height * outputMultiple) + 2)))
             {
                 bmp.SetResolution(300, 300);
                 using (Graphics g = Graphics.FromImage(bmp))
@@ -86,7 +85,7 @@ namespace NShapeCreator.IO
                     g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                     g.TextRenderingHint = TextRenderingHint.AntiAlias;
                     g.SmoothingMode = SmoothingMode.HighQuality;
-                    NGraphics.DrawGDIPaths(g, bmp.Size, gdiShape, outputMultiple);//gdiShape.ImageSizeMultiple);
+                    NGraphics.DrawGDIPaths(g, bmp.Size, gdiShape, outputMultiple);
                 }
                 bmp.Save(fileName, imageFormat);
             }
@@ -257,11 +256,11 @@ namespace NShapeCreator.IO
                                 {
                                     arc.StartAngle += 180;
                                 }
-                                sb.AppendLine(tab4 + "Path.AddArc(" + arc.X + "F * Scale, " + arc.Y + "F * -1 * Scale, " + arc.Width + "F * Scale, " + arc.Height + "F * Scale, " + arc.StartAngle + "F, " + arc.SweepAngle + "F);");
+                                sb.AppendLine(tab4 + "Path.AddArc(" + arc.X + "F * Scale * _pixelToMmMultiple, " + arc.Y + "F * -1 * Scale * _pixelToMmMultiple, " + arc.Width + "F * Scale * _pixelToMmMultiple, " + arc.Height + "F * Scale * _pixelToMmMultiple, " + arc.StartAngle + "F, " + arc.SweepAngle + "F);");
                                 break;
                             case GDIPathSegmentTypeName.CubicBezier:
                                 CubicBezier cub = (CubicBezier)gdiShape.Segments[segmentIndex];
-                                sb.AppendLine(tab4 + "Path.AddBezier(" + cub.StartingPointX + "F * Scale, " + cub.StartingPointY + "F * -1 * Scale, " + cub.ControlPointOneX + "F * Scale, " + cub.ControlPointOneY + "F * -1 * Scale, " + cub.ControlPointTwoX + "F * Scale, " + cub.ControlPointTwoY + "F * -1 * Scale, " + cub.EndingPointX + "F * Scale, " + cub.EndingPointY + "F * -1 * Scale);");
+                                sb.AppendLine(tab4 + "Path.AddBezier(" + cub.StartingPointX + "F * Scale * _pixelToMmMultiple, " + cub.StartingPointY + "F * -1 * Scale * _pixelToMmMultiple, " + cub.ControlPointOneX + "F * Scale * _pixelToMmMultiple, " + cub.ControlPointOneY + "F * -1 * Scale * _pixelToMmMultiple, " + cub.ControlPointTwoX + "F * Scale * _pixelToMmMultiple, " + cub.ControlPointTwoY + "F * -1 * Scale * _pixelToMmMultiple, " + cub.EndingPointX + "F * Scale * _pixelToMmMultiple, " + cub.EndingPointY + "F * -1 * Scale * _pixelToMmMultiple);");
                                 break;
                             case GDIPathSegmentTypeName.Lines:
                                 Lines lin = (Lines)gdiShape.Segments[segmentIndex];
@@ -269,7 +268,7 @@ namespace NShapeCreator.IO
                                 sb.Append(tab4 + "Path.AddLines(new PointF[]{");
                                 for (int p = 0; p < lin.Points.Length; p++)
                                 {
-                                    sb.Append("new PointF(" + lin.Points[p].X + "F * Scale, " + lin.Points[p].Y + "F * -1 * Scale)");
+                                    sb.Append("new PointF(" + lin.Points[p].X + "F * Scale * _pixelToMmMultiple, " + lin.Points[p].Y + "F * -1 * Scale * _pixelToMmMultiple)");
                                     if (p + 1 < lin.Points.Length)
                                     {
                                         sb.Append(", ");
@@ -283,7 +282,7 @@ namespace NShapeCreator.IO
                                 sb.AppendLine(tab4 + "{");
                                 for (int p = 0; p < pol.Points.Length; p++)
                                 {
-                                    sb.Append(tab5 + "new PointF(" + pol.Points[p].X + "F * Scale, " + pol.Points[p].Y + "F * -1 * Scale)");
+                                    sb.Append(tab5 + "new PointF(" + pol.Points[p].X + "F * Scale * _pixelToMmMultiple, " + pol.Points[p].Y + "F * -1 * Scale * _pixelToMmMultiple)");
                                     if ((p + 1) < pol.Points.Length)
                                     {
                                         sb.Append(", ");
@@ -294,7 +293,7 @@ namespace NShapeCreator.IO
                                 break;
                             case GDIPathSegmentTypeName.Rectangle:
                                 GDI.Rectangle rec = (GDI.Rectangle)gdiShape.Segments[segmentIndex];
-                                sb.AppendLine(tab4 + "Path.AddRectangle(new RectangleF(" + rec.X + "F * Scale, " + rec.Y + "F * -1 * Scale, " + rec.Width + "F * Scale, " + rec.Height + "F * Scale));");
+                                sb.AppendLine(tab4 + "Path.AddRectangle(new RectangleF(" + rec.X + "F * Scale * _pixelToMmMultiple, " + rec.Y + "F * -1 * Scale * _pixelToMmMultiple, " + rec.Width + "F * Scale * _pixelToMmMultiple, " + rec.Height + "F * Scale * _pixelToMmMultiple));");
                                 break;
                         }
 
@@ -420,6 +419,7 @@ namespace NShapeCreator.IO
             sb.AppendLine("");
             sb.AppendLine(tab2 + "private float _width;");
             sb.AppendLine(tab2 + "private float _height;");
+            sb.AppendLine(tab2 + "protected const float _pixelToMmMultiple = 3.779528F;");
             sb.AppendLine("");
             sb.AppendLine(tab2 + "#endregion Fields");
             sb.AppendLine("");
@@ -461,12 +461,12 @@ namespace NShapeCreator.IO
             sb.AppendLine(tab2 + "{");
             sb.AppendLine(tab3 + "get");
             sb.AppendLine(tab3 + "{");
-            sb.AppendLine(tab4 + "return base.Width;");
+            sb.AppendLine(tab4 + "return _width * Scale * _pixelToMmMultiple;");
             sb.AppendLine(tab3 + "}");
             sb.AppendLine(tab3 + "set");
             sb.AppendLine(tab3 + "{");
             sb.AppendLine(tab4 + "_width = value;");
-            sb.AppendLine(tab4 + "base.Width = (int)Math.Ceiling(_width);");
+            sb.AppendLine(tab4 + "base.Width = (int)Math.Ceiling(_width * Scale * _pixelToMmMultiple);");
             sb.AppendLine(tab3 + "}");
             sb.AppendLine(tab2 + "}");
             sb.AppendLine("");
@@ -475,12 +475,12 @@ namespace NShapeCreator.IO
             sb.AppendLine(tab2 + "{");
             sb.AppendLine(tab3 + "get");
             sb.AppendLine(tab3 + "{");
-            sb.AppendLine(tab4 + "return base.Height;");
+            sb.AppendLine(tab4 + "return _height * Scale * _pixelToMmMultiple;");
             sb.AppendLine(tab3 + "}");
             sb.AppendLine(tab3 + "set");
             sb.AppendLine(tab3 + "{");
             sb.AppendLine(tab4 + "_height = value;");
-            sb.AppendLine(tab4 + "base.Height = (int)Math.Ceiling(_height);");
+            sb.AppendLine(tab4 + "base.Height = (int)Math.Ceiling(_height * Scale * _pixelToMmMultiple);");
             sb.AppendLine(tab3 + "}");
             sb.AppendLine(tab2 + "}");
             sb.AppendLine("");
@@ -498,8 +498,8 @@ namespace NShapeCreator.IO
             sb.AppendLine(tab4 + "if (value > 0)");
             sb.AppendLine(tab4 + "{");
             sb.AppendLine(tab5 + "_scale = value;");
-            sb.AppendLine(tab5 + "base.Width = (int)Math.Ceiling(_width * Scale);");
-            sb.AppendLine(tab5 + "base.Height = (int)Math.Ceiling(_height * Scale);");
+            sb.AppendLine(tab5 + "base.Width = (int)Math.Ceiling(_width * Scale * _pixelToMmMultiple);");
+            sb.AppendLine(tab5 + "base.Height = (int)Math.Ceiling(_height * Scale * _pixelToMmMultiple);");
             sb.AppendLine(tab4 + "}");
             sb.AppendLine(tab3 + "}");
             sb.AppendLine(tab2 + "}");
