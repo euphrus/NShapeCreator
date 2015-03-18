@@ -47,35 +47,38 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CustomCollectionEditor.cs" />
-    <Compile Include="NShapeCreator.GDI\NShapeCreator.GDI.Shape.cs" />
-    <Compile Include="NShapeCreator.GDI\NShapeCreator.GDI.GDIPathSegmentCollection.cs" />
-    <Compile Include="NShapeCreator.Message\NShapeCreator.Message.MessageForm.cs">
+    <Compile Include="NPathCollection.cs" />
+    <Compile Include="NPropertyCollection.cs" />
+    <Compile Include="NShape.cs" />
+    <Compile Include="NSegmentCollection.cs" />
+    <Compile Include="Message\NShapeCreator.Message.MessageForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="NShapeCreator.Message\NShapeCreator.Message.Messenger.cs" />
-    <Compile Include="NShapeCreator.GDI\NShapeCreator.GDI.GDIPathSegment.cs" />
-    <Compile Include="NShapeCreator.UI\NShapeCreator.NGraphics.cs" />
-    <Compile Include="NShapeCreator.IO\NShapeCreator.IO.cs" />
-    <Compile Include="NShapeCreator.UI\NShapeCreator.UI.NDisplay.cs">
+    <Compile Include="Message\NShapeCreator.Message.Messenger.cs" />
+    <Compile Include="NSegment.cs" />
+    <Compile Include="NShapeCreator.UI\NGraphics.cs" />
+    <Compile Include="IO\NShapeCreator.IO.cs" />
+    <Compile Include="NShapeCreator.UI\NDisplay.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="NShapeCreator.UI\NShapeCreator.UI.NDisplay.Designer.cs">
-      <DependentUpon>NShapeCreator.UI.NDisplay.cs</DependentUpon>
+    <Compile Include="NShapeCreator.UI\NDisplay.Designer.cs">
+      <DependentUpon>NDisplay.cs</DependentUpon>
     </Compile>
-    <Compile Include="NShapeCreator.UI\NShapeCreator.UI.NControl.cs">
+    <Compile Include="NShapeCreator.UI\NControl.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="NShapeCreator.UI\NShapeCreator.UI.NControl.Designer.cs">
-      <DependentUpon>NShapeCreator.UI.NControl.cs</DependentUpon>
+    <Compile Include="NShapeCreator.UI\NControl.Designer.cs">
+      <DependentUpon>NControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Master.cs" />
+    <Compile Include="NProperty.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="NShapeCreator.UI\NShapeCreator.UI.NDisplay.resx">
-      <DependentUpon>NShapeCreator.UI.NDisplay.cs</DependentUpon>
+    <EmbeddedResource Include="NShapeCreator.UI\NDisplay.resx">
+      <DependentUpon>NDisplay.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="NShapeCreator.UI\NShapeCreator.UI.NControl.resx">
-      <DependentUpon>NShapeCreator.UI.NControl.cs</DependentUpon>
+    <EmbeddedResource Include="NShapeCreator.UI\NControl.resx">
+      <DependentUpon>NControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -89,6 +92,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="LICENSE" />
+    <Compile Include="NPath.cs" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

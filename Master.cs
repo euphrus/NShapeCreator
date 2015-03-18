@@ -6,7 +6,6 @@ using System.Threading;
 using System.Windows.Forms;
 using NShapeCreator.Message;
 using NShapeCreator.UI;
-using NShapeCreator.GDI;
 
 namespace NShapeCreator
 {
