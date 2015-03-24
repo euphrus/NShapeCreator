@@ -42,7 +42,10 @@ namespace NShapeCreator.IO
                         resourceImageMultiple -= .01F;
                     }
                 }
-                SaveResourceImage(nshape, nshape.Paths[0], Path.Combine(Path.Combine(directory, "Resources"), baseFileName + ".bmp"), (int)Math.Ceiling(nshape.Paths[0].WidthF), (int)Math.Ceiling(nshape.Paths[0].HeightF), ImageFormat.Bmp, resourceImageMultiple);
+                for (int i1 = 0; i1 < nshape.Paths.Count; i1++)
+                {
+                    SaveResourceImage(nshape, nshape.Paths[i1], Path.Combine(Path.Combine(directory, "Resources"), baseFileName + ".bmp"), (int)Math.Ceiling(nshape.Paths[i1].WidthF), (int)Math.Ceiling(nshape.Paths[i1].HeightF), ImageFormat.Bmp, resourceImageMultiple);
+                }
                 SaveTxt(Path.Combine(Path.Combine(directory, "Shapes"), baseFileName + ".cs"), DotNet.GetShapeClass(canvasSize, nshape));
                 SaveTxt(Path.Combine(directory, "Initializer.cs"), DotNet.GetNShapeLibraryInitializerClass(canvasSize, nshape));
                 SaveTxt(Path.Combine(Path.Combine(directory, "Shapes"), "RectangleFBase.cs"), DotNet.GetRectangleFBaseClass(canvasSize, nshape));
